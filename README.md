@@ -1,36 +1,146 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# USSD Emulator - CDP Demo
+
+A web-based USSD emulator for demonstrating Customer Data Platform (CDP) capabilities with personalized offers. Built with Next.js, this application simulates both smartphone and feature phone USSD interfaces for African telco demonstrations, using Safaricom as an example.
+
+## Features
+
+### 🚀 Core Functionality
+
+- **Dual Interface Support**: Smartphone and feature phone UI emulation
+- **Session Management**: Unique session IDs for each USSD interaction
+- **Phone Number Management**: Save and reuse phone numbers via localStorage
+- **Real-time USSD Processing**: Server-side API handling USSD codes and responses
+
+### 📱 Device Emulation
+
+- **Smartphone Interface**: Modern touch-friendly UI with virtual keypad and USSD popup dialogs
+- **Feature Phone Interface**: Authentic monochrome display with physical keypad simulation and inline USSD responses
+- **Auto-Submit Behavior**: Feature phone automatically submits single-digit responses for realistic interaction
+- **Dynamic Status Bar**: Real-time clock and battery percentage that decreases each minute
+- **Quick Access Codes**: One-click access to common USSD codes
+- **Session Persistence**: Maintains USSD session state across menu navigation
+
+### 🎯 CDP-Powered Personalization
+
+- **Customer Segmentation**: Premium, Regular, and Low-usage customer tiers
+- **Dynamic Offer Personalization**: Offers tailored based on usage patterns and customer segment
+- **Contextual Recommendations**: Smart highlighting of relevant offers
+- **Usage-Based Pricing**: Automatic discounts for different customer segments
+
+### 📊 Demo Scenarios
+
+- **Balance Checking** (`*144#`): Account balance and remaining bundles
+- **Data Bundles** (`*444#`): Personalized data offers
+- **Voice Bundles** (`*555#`): Voice minute packages
+- **Special Offers** (`*234#`): CDP-driven personalized promotions
+- **Account Management** (`*100#`): Customer profile information
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm, yarn, pnpm, or bun
+
+### Installation
 
 ```bash
+# Clone and install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the emulator.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Demo Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Start a Session**: Enter a phone number or select from saved numbers
+2. **Choose Device**: Switch between smartphone and feature phone interfaces
+3. **Execute USSD Codes**: Click quick access buttons or type codes manually
+4. **Experience Personalization**: Notice how offers change based on the phone number's customer profile
 
-## Learn More
+### Sample Phone Numbers
 
-To learn more about Next.js, take a look at the following resources:
+The demo includes pre-configured customer profiles:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `+254712345678` - Premium customer (10% discount on combo deals)
+- `+254723456789` - Regular customer (standard pricing)
+- `+254734567890` - Low-usage customer (special discounts on smaller bundles)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Technical Architecture
 
-## Deploy on Vercel
+### Frontend Components
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `PhoneSelector`: Demo controls and session management
+- `SmartPhone`: Modern smartphone USSD interface
+- `FeaturePhone`: Traditional feature phone interface
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Backend APIs
+
+- `/api/ussd` - USSD code processing with multi-level menu navigation and menuPath tracking
+- `/api/config` - Demo configuration management
+
+### Data Layer
+
+- Customer profiles with usage patterns and preferences
+- Dynamic offer generation based on customer segments
+- Session state management with menuStack for navigation history
+- Real-time status updates (time, battery) updated every minute
+
+## Customization
+
+### Adding Customer Profiles
+
+Edit `/app/api/ussd/route.ts` to add new customer profiles:
+
+```typescript
+const mockCustomers: Record<string, CustomerProfile> = {
+  "+254700000000": {
+    phoneNumber: "+254700000000",
+    accountBalance: 100.0,
+    dataUsage: 5.0,
+    voiceUsage: 60,
+    preferredOffers: ["data"],
+    lastTopUp: "2024-09-30",
+    segment: "regular",
+  },
+}
+```
+
+### Modifying Offers
+
+Update the `getPersonalizedOffers` function to customize offer logic and personalization rules.
+
+### Configuration API
+
+Use the `/api/config` endpoint to dynamically update customer profiles and offer multipliers during demonstrations.
+
+## Project Structure
+
+```
+app/
+├── components/           # React components
+│   ├── PhoneSelector.tsx # Demo controls
+│   ├── SmartPhone.tsx    # Smartphone UI
+│   └── FeaturePhone.tsx  # Feature phone UI
+├── api/                  # API routes
+│   ├── ussd/route.ts     # USSD processing
+│   └── config/route.ts   # Configuration management
+├── types/                # TypeScript definitions
+│   └── index.ts          # Shared interfaces
+├── layout.tsx            # App layout
+└── page.tsx              # Main application
+```
+
+## Technology Stack
+
+- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **State Management**: React useState with localStorage persistence
+- **Styling**: Tailwind CSS with custom phone frame designs
+
+## License
+
+This project is for demonstration purposes. Built for showcasing CDP capabilities in African telco environments.
