@@ -30,7 +30,6 @@ export default function PhoneSelector({
   onSelectNumber,
   onRemoveNumber,
   currentNumber,
-  sessionData,
   onExecuteCode,
 }: PhoneSelectorProps) {
   const [phoneNumber, setPhoneNumber] = useState("")

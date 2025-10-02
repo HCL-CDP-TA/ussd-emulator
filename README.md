@@ -56,8 +56,8 @@ Open [http://localhost:3000](http://localhost:3000) to view the emulator.
 
 ### Demo Usage
 
-1. **Start a Session**: Enter a phone number or select from saved numbers
-2. **Choose Device**: Switch between smartphone and feature phone interfaces
+1. **Choose Device**: Switch between smartphone and feature phone interfaces
+2. **Choose a Phone Number**: Enter a phone number or select from saved numbers
 3. **Execute USSD Codes**: Click quick access buttons or type codes manually
 4. **Experience Personalization**: Notice how offers change based on the phone number's customer profile
 
