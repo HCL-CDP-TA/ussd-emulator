@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.1.1...v1.1.2) (2025-10-03)
+
+
+### Bug Fixes
+
+* docker fixes ([8048b7b](https://github.com/HCL-CDP-TA/ussd-emulator/commit/8048b7b1bb847901e6c6959143734cc1646837b1))
+
 ## [1.1.1](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.1.0...v1.1.1) (2025-10-03)
 
 
