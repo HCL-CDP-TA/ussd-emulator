@@ -121,7 +121,7 @@ export default function PhoneSelector({
                       currentNumber === number ? "bg-blue-100 border border-blue-300" : "bg-white hover:bg-gray-100"
                     }`}
                     onClick={() => selectSavedNumber(number)}>
-                    <span className="text-sm font-mono">{number}</span>
+                    <span className="text-sm font-mono text-gray-900">{number}</span>
                     <button
                       onClick={e => {
                         e.stopPropagation()
