@@ -15,6 +15,9 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV:-production}
       - PORT=3000
+    volumes:
+      # Persist phone numbers data
+      - ussd_data:/app/data
     labels:
       - "app=ussd-emulator"
       - "environment=${ENVIRONMENT:-production}"
@@ -25,6 +28,10 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+volumes:
+  ussd_data:
+    driver: local
 
 networks:
   default:

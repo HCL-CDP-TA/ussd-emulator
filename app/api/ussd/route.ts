@@ -1,6 +1,24 @@
 import { NextRequest, NextResponse } from "next/server"
-import { USSDRequest, USSDResponse, CustomerProfile, Offer } from "../../types"
+import { USSDRequest, USSDResponse, CustomerProfile, Offer, PhoneNumbersData } from "../../types"
 import { ApiConfiguration, ApiClient, ApiRequest, ApiResponse } from "@hcl-cdp-ta/cdp-node-sdk"
+import { promises as fs } from "fs"
+import path from "path"
+
+// Path to the phone numbers JSON file
+const PHONE_NUMBERS_FILE = path.join(process.cwd(), "data", "phone-numbers.json")
+
+// Get IMEI for a phone number from centralized store
+async function getIMEIForPhoneNumber(phoneNumber: string): Promise<string | null> {
+  try {
+    const data = await fs.readFile(PHONE_NUMBERS_FILE, "utf-8")
+    const phoneData: PhoneNumbersData = JSON.parse(data)
+    const phoneEntry = phoneData.phoneNumbers.find(p => p.phoneNumber === phoneNumber)
+    return phoneEntry?.imei || null
+  } catch (error) {
+    console.error("Error reading phone numbers:", error)
+    return null
+  }
+}
 
 // Mock customer database
 const mockCustomers: Record<string, CustomerProfile> = {

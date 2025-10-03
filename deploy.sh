@@ -197,10 +197,23 @@ esac
 
 # Create and start new container
 log_info "Starting new container on port $PORT"
+
+# Determine the data directory path
+if [ "$LOCAL_MODE" = true ]; then
+    DATA_DIR="$(pwd)/data"
+else
+    # For non-local deployments, use the directory where deploy script was run
+    DATA_DIR="$OLDPWD/data"
+fi
+
+# Ensure data directory exists
+mkdir -p "$DATA_DIR"
+
 docker run -d \
     --name "$CONTAINER_NAME" \
     --restart unless-stopped \
     -p "$PORT:3000" \
+    -v "$DATA_DIR:/app/data" \
     -e NODE_ENV="$NODE_ENV" \
     -e PORT=3000 \
     --label "app=$APP_NAME" \

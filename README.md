@@ -138,8 +138,36 @@ app/
 
 - **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes
-- **State Management**: React useState with localStorage persistence
+- **Data Storage**: JSON file-based persistence with centralized phone number management
 - **Styling**: Tailwind CSS with custom phone frame designs
+
+## Deployment
+
+### Quick Start (Deploy Script)
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd ussd-emulator
+
+# Deploy latest version
+./deploy.sh
+
+# Deploy specific version
+./deploy.sh v1.0.0 production
+
+# Deploy from local directory (for development)
+./deploy.sh local development --local
+```
+
+### Production Deployment
+
+- **Automated Deployment**: Uses deploy.sh script with Docker
+- **Data Persistence**: Phone numbers stored in container (see DEPLOYMENT.md for volume mounting)
+- **Health Checks**: Built-in application health monitoring
+- **Scalability**: Single instance recommended (JSON file storage limitation)
+
+For detailed deployment options, scaling considerations, and production setup, see [DEPLOYMENT.md](./docs/DEPLOYMENT.md).
 
 ## License
 

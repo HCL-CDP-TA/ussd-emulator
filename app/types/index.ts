@@ -1,5 +1,16 @@
 export type PhoneType = "smartphone" | "featurephone"
 
+export interface PhoneNumberEntry {
+  phoneNumber: string
+  imei: string
+  label: string
+  addedAt: string
+}
+
+export interface PhoneNumbersData {
+  phoneNumbers: PhoneNumberEntry[]
+}
+
 export interface SessionData {
   phoneNumber: string
   sessionId: string

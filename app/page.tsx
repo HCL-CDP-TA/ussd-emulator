@@ -1,16 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import PhoneSelector from "./components/PhoneSelector"
 import SmartPhone from "./components/SmartPhone"
 import FeaturePhone from "./components/FeaturePhone"
-import { PhoneType, SessionData, USSDRequest, USSDResponse } from "./types"
-import { generateIMEI } from "./utils/imei"
-
-interface SavedPhone {
-  phoneNumber: string
-  imei: string
-}
+import { PhoneType, SessionData, USSDRequest, USSDResponse, PhoneNumberEntry } from "./types"
 
 export default function Home() {
   const [phoneType, setPhoneType] = useState<PhoneType>("smartphone")
@@ -22,7 +16,7 @@ export default function Home() {
     menuStack: [],
   })
 
-  const [savedPhones, setSavedPhones] = useState<SavedPhone[]>([])
+  const [savedPhones, setSavedPhones] = useState<PhoneNumberEntry[]>([])
   const [debugData, setDebugData] = useState<{
     lastRequest?: USSDRequest
     lastResponse?: USSDResponse
@@ -30,74 +24,81 @@ export default function Home() {
   }>({})
   const [showDebug, setShowDebug] = useState(false)
 
-  useEffect(() => {
-    // Load saved phones from localStorage
-    const saved = localStorage.getItem("ussd-saved-phones")
-    if (saved) {
-      setSavedPhones(JSON.parse(saved))
-    } else {
-      // Migrate from old storage format if it exists
-      const oldNumbers = localStorage.getItem("ussd-saved-numbers")
-      const oldIMEIs = localStorage.getItem("ussd-phone-imei-map")
-
-      if (oldNumbers) {
-        const numbers: string[] = JSON.parse(oldNumbers)
-        const imeiMap: Record<string, string> = oldIMEIs ? JSON.parse(oldIMEIs) : {}
-
-        const migratedPhones: SavedPhone[] = numbers.map(phoneNumber => ({
-          phoneNumber,
-          imei: imeiMap[phoneNumber] || generateIMEI(),
-        }))
-
-        setSavedPhones(migratedPhones)
-        localStorage.setItem("ussd-saved-phones", JSON.stringify(migratedPhones))
-
-        // Clean up old storage
-        localStorage.removeItem("ussd-saved-numbers")
-        localStorage.removeItem("ussd-phone-imei-map")
+  const loadPhoneNumbers = useCallback(async () => {
+    try {
+      const response = await fetch("/api/phone-numbers")
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success) {
+          setSavedPhones(data.phoneNumbers)
+          // Set first phone as default if none selected
+          if (!currentNumber && data.phoneNumbers.length > 0) {
+            setCurrentNumber(data.phoneNumbers[0].phoneNumber)
+          }
+        }
       }
+    } catch (error) {
+      console.error("Failed to load phone numbers:", error)
     }
-  }, [])
+  }, [currentNumber])
 
-  const savePhoneNumber = (phoneNumber: string) => {
-    const existingPhone = savedPhones.find(phone => phone.phoneNumber === phoneNumber)
-    if (!existingPhone) {
-      const newPhone: SavedPhone = {
-        phoneNumber,
-        imei: generateIMEI(),
+  useEffect(() => {
+    // Load phone numbers from centralized API
+    loadPhoneNumbers()
+  }, [loadPhoneNumbers])
+
+  const savePhoneNumber = async (phoneNumber: string, label?: string) => {
+    try {
+      const response = await fetch("/api/phone-numbers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phoneNumber, label }),
+      })
+
+      if (response.ok) {
+        await loadPhoneNumbers() // Reload the list
+        return true
+      } else {
+        const error = await response.json()
+        console.error("Failed to add phone number:", error.error)
+        return false
       }
-      const updated = [...savedPhones, newPhone]
-      setSavedPhones(updated)
-      localStorage.setItem("ussd-saved-phones", JSON.stringify(updated))
+    } catch (error) {
+      console.error("Failed to add phone number:", error)
+      return false
     }
   }
 
   const selectNumber = (phoneNumber: string) => {
     setCurrentNumber(phoneNumber)
-    // Clear any existing session when switching numbers
     setSessionData({
-      phoneNumber: "",
       sessionId: "",
+      phoneNumber: "",
       currentMenu: "",
       menuStack: [],
     })
-    savePhoneNumber(phoneNumber)
   }
 
-  const removeNumber = (phoneNumber: string) => {
-    const updated = savedPhones.filter(phone => phone.phoneNumber !== phoneNumber)
-    setSavedPhones(updated)
-    localStorage.setItem("ussd-saved-phones", JSON.stringify(updated))
-
-    // If we're removing the currently selected number, clear it
-    if (currentNumber === phoneNumber) {
-      setCurrentNumber("")
-      setSessionData({
-        phoneNumber: "",
-        sessionId: "",
-        currentMenu: "",
-        menuStack: [],
+  const removeNumber = async (phoneNumber: string) => {
+    try {
+      const response = await fetch(`/api/phone-numbers?phoneNumber=${encodeURIComponent(phoneNumber)}`, {
+        method: "DELETE",
       })
+
+      if (response.ok) {
+        await loadPhoneNumbers() // Reload the list
+        // If removed number was current, switch to first available
+        if (currentNumber === phoneNumber && savedPhones.length > 1) {
+          const remaining = savedPhones.filter(p => p.phoneNumber !== phoneNumber)
+          if (remaining.length > 0) {
+            setCurrentNumber(remaining[0].phoneNumber)
+          } else {
+            setCurrentNumber("")
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to remove phone number:", error)
     }
   }
 
@@ -115,6 +116,7 @@ export default function Home() {
               onPhoneTypeChange={setPhoneType}
               savedNumbers={savedPhones.map(phone => phone.phoneNumber)}
               onSelectNumber={selectNumber}
+              onAddNumber={savePhoneNumber}
               onRemoveNumber={removeNumber}
               currentNumber={currentNumber}
               sessionData={sessionData}
