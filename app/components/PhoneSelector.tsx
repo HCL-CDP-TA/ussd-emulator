@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Smartphone, Phone, Trash2 } from "lucide-react"
 import { PhoneType, SessionData } from "../types"
+import packageJson from "../../package.json"
 
 interface PhoneSelectorProps {
   phoneType: PhoneType
@@ -207,6 +208,11 @@ export default function PhoneSelector({
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Version Display */}
+      <div className="mt-4 pt-3 border-t border-gray-200">
+        <p className="text-xs text-gray-400 text-center">Version {packageJson.version}</p>
       </div>
     </div>
   )
