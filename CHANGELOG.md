@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.6](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.1.5...v1.1.6) (2025-10-03)
+
+
+### Bug Fixes
+
+* number entry display fix ([418e2bb](https://github.com/HCL-CDP-TA/ussd-emulator/commit/418e2bb77788d6c652e573055ce17a97b743a949))
+* number list display fix ([b04d530](https://github.com/HCL-CDP-TA/ussd-emulator/commit/b04d53091a845f27a108d4ee8f5b8749e60a2024))
+
 ## [1.1.5](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.1.4...v1.1.5) (2025-10-03)
 
 
