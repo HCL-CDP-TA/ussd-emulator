@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.1.6...v1.2.0) (2025-10-03)
+
+
+### Features
+
+* added version nummber display ([5c4a712](https://github.com/HCL-CDP-TA/ussd-emulator/commit/5c4a712dfddb9efdbf5c98db234b4aceae64b92c))
+
 ## [1.1.6](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.1.5...v1.1.6) (2025-10-03)
 
 
