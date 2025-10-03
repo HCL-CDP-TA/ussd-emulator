@@ -210,6 +210,8 @@ fi
 mkdir -p "$DATA_DIR"
 
 log_info "Data will be stored in: $DATA_DIR"
+log_info "Data directory contents before starting container:"
+ls -la "$DATA_DIR" || log_warning "Could not list data directory contents"
 
 docker run -d \
     --name "$CONTAINER_NAME" \
@@ -249,6 +251,14 @@ if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
     docker logs "$CONTAINER_NAME"
     exit 1
 fi
+
+# Initialize data by calling the API
+log_info "Initializing phone numbers data..."
+curl -s "http://localhost:$PORT/api/phone-numbers" > /dev/null || log_warning "Could not initialize data via API"
+
+# Check if data file was created
+log_info "Data directory contents after initialization:"
+ls -la "$DATA_DIR" || log_warning "Could not list data directory contents"
 
 # Display deployment information
 log_success "Deployment completed successfully!"
