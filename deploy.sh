@@ -209,6 +209,15 @@ fi
 # Ensure data directory exists
 mkdir -p "$DATA_DIR"
 
+# Initialize data file if it doesn't exist (copy from built image)
+if [ ! -f "$DATA_DIR/phone-numbers.json" ]; then
+    log_info "Initializing data file from built image..."
+    docker run --rm \
+        -v "$DATA_DIR:/host-data" \
+        "${IMAGE_NAME}:${IMAGE_TAG}" \
+        sh -c "cp /app/data/phone-numbers.json /host-data/ 2>/dev/null || echo 'No data file in image to copy'"
+fi
+
 docker run -d \
     --name "$CONTAINER_NAME" \
     --restart unless-stopped \

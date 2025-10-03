@@ -65,8 +65,8 @@ async function writePhoneNumbers(data: PhoneNumbersData) {
 
 // Validate phone number format
 function isValidPhoneNumber(phoneNumber: string): boolean {
-  // Basic E.164 format validation for Kenyan numbers
-  return /^\+254[17]\d{8}$/.test(phoneNumber)
+  // E.164 international format: + followed by 7-15 digits
+  return /^\+\d{7,15}$/.test(phoneNumber)
 }
 
 // GET - List all phone numbers
