@@ -157,7 +157,7 @@ export default function PhoneSelector({
                 setAddError("") // Clear error on input change
               }}
               placeholder="e.g., +254712345678"
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 ${
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900 ${
                 addError ? "border-red-300 bg-red-50" : "border-gray-300"
               }`}
               autoFocus
