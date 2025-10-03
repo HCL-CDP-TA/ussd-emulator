@@ -209,6 +209,20 @@ fi
 # Ensure data directory exists
 mkdir -p "$DATA_DIR"
 
+log_info "Setting permissions for container user (nextjs uid:1001, gid:1001)"
+# Set permissions for container user (nextjs uid:1001, gid:1001)
+# This allows the container to write to the host directory
+if chown -R 1001:1001 "$DATA_DIR" 2>/dev/null; then
+    log_success "Successfully set ownership to 1001:1001"
+else
+    log_warning "Could not set ownership to 1001:1001, trying to make writable by all"
+    if chmod 777 "$DATA_DIR" 2>/dev/null; then
+        log_success "Successfully set directory to 777 (writable by all)"
+    else
+        log_error "Could not set permissions on data directory"
+    fi
+fi
+
 log_info "Data will be stored in: $DATA_DIR"
 log_info "Data directory contents before starting container:"
 ls -la "$DATA_DIR" || log_warning "Could not list data directory contents"
@@ -254,11 +268,25 @@ fi
 
 # Initialize data by calling the API
 log_info "Initializing phone numbers data..."
-curl -s "http://localhost:$PORT/api/phone-numbers" > /dev/null || log_warning "Could not initialize data via API"
+API_RESPONSE=$(curl -s -w "HTTP_STATUS:%{http_code}" "http://localhost:$PORT/api/phone-numbers")
+HTTP_STATUS=$(echo "$API_RESPONSE" | grep -o "HTTP_STATUS:[0-9]*" | cut -d: -f2)
+
+if [ "$HTTP_STATUS" = "200" ]; then
+    log_success "API call successful (HTTP $HTTP_STATUS)"
+else
+    log_warning "API call failed (HTTP $HTTP_STATUS)"
+    log_info "API Response: $(echo "$API_RESPONSE" | sed 's/HTTP_STATUS:[0-9]*//')"
+    log_info "Container logs:"
+    docker logs "$CONTAINER_NAME" | tail -10
+fi
 
 # Check if data file was created
 log_info "Data directory contents after initialization:"
 ls -la "$DATA_DIR" || log_warning "Could not list data directory contents"
+
+# Check what's actually in the container's data directory
+log_info "Container's data directory contents:"
+docker exec "$CONTAINER_NAME" ls -la /app/data/ || log_warning "Could not list container data directory"
 
 # Display deployment information
 log_success "Deployment completed successfully!"
