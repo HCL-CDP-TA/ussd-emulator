@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.1.0...v1.1.1) (2025-10-03)
+
+
+### Bug Fixes
+
+* deploy data location, phone number validation fixes ([b8426b5](https://github.com/HCL-CDP-TA/ussd-emulator/commit/b8426b5968367bd0ecb1eaa8ec87705046c2fc52))
+
 ## [1.1.0](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.0.0...v1.1.0) (2025-10-03)
 
 
