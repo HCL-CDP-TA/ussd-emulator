@@ -30,6 +30,7 @@ ARG NODE_ENV=production
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION
+ARG PORT=3000
 
 # Set environment variables for build
 ENV NODE_ENV=production
@@ -63,7 +64,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Set environment variables
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=${PORT:-3000}
+ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Add labels for metadata
