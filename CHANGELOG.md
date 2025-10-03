@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.0.0...v1.1.0) (2025-10-03)
+
+
+### Features
+
+* moved number storage server-side ([12d1153](https://github.com/HCL-CDP-TA/ussd-emulator/commit/12d1153cdb835213010fd2cc75dfa0e3d264d97e))
+
 ## 1.0.0 (2025-10-03)
 
 
