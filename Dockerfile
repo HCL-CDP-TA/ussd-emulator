@@ -43,6 +43,11 @@ RUN npm run build
 FROM base AS runner
 WORKDIR /app
 
+# Build arguments need to be redeclared in each stage
+ARG BUILD_DATE
+ARG VCS_REF  
+ARG VERSION
+
 # Install wget for healthcheck
 RUN apk add --no-cache wget
 
@@ -50,8 +55,8 @@ RUN apk add --no-cache wget
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy built application
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+# Create empty public directory (Next.js requires it)
+RUN mkdir -p ./public
 
 # Copy data directory with initial phone numbers
 COPY --from=builder --chown=nextjs:nodejs /app/data ./data
@@ -79,11 +84,11 @@ LABEL org.opencontainers.image.version=$VERSION
 USER nextjs
 
 # Expose port
-EXPOSE ${PORT:-3000}
+EXPOSE 3000
 
-# Health check
+# Health check  
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-3000}/ || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
 # Start the application using standalone server
 CMD ["node", "server.js"]
