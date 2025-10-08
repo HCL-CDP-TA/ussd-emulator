@@ -2,33 +2,21 @@
   "phoneNumbers": [
     {
       "phoneNumber": "+254712345678",
-      "imei": "352098061234567",
+      "imei": "352098067829143",
       "label": "Premium Customer",
       "addedAt": "2024-10-03T00:00:00.000Z"
     },
     {
       "phoneNumber": "+254723456789",
-      "imei": "353283081234568",
+      "imei": "358918075947568",
       "label": "Regular Customer",
       "addedAt": "2024-10-03T00:00:00.000Z"
     },
     {
       "phoneNumber": "+254734567890",
-      "imei": "358918071234569",
+      "imei": "354049073816297",
       "label": "Low-usage Customer",
       "addedAt": "2024-10-03T00:00:00.000Z"
-    },
-    {
-      "phoneNumber": "+254123123333",
-      "imei": "354049079959198",
-      "label": "Phone +254123123333",
-      "addedAt": "2025-10-03T06:26:28.552Z"
-    },
-    {
-      "phoneNumber": "+254123111111",
-      "imei": "356999088639904",
-      "label": "Phone +254123111111",
-      "addedAt": "2025-10-03T06:26:50.435Z"
     }
   ]
 }

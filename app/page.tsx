@@ -106,7 +106,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-grey-800 mb-2">USSD Emulator</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">USSD Emulator</h1>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

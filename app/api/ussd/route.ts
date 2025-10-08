@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
 import { USSDRequest, USSDResponse, CustomerProfile, Offer, PhoneNumbersData } from "../../types"
-import { ApiConfiguration, ApiClient, ApiRequest, ApiResponse } from "@hcl-cdp-ta/cdp-node-sdk"
+import {
+  ApiConfiguration,
+  ApiClient,
+  ApiRequest,
+  ApiResponse,
+  EventType,
+  UserIdentity,
+  UserIdentityType,
+} from "@hcl-cdp-ta/cdp-node-sdk"
 import { promises as fs } from "fs"
 import path from "path"
 
@@ -332,6 +340,29 @@ export async function POST(request: NextRequest) {
     if (!body.phoneNumber || !body.sessionId || !body.ussdCode || !body.imei) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
+
+    const api = new ApiClient(new ApiConfiguration(process.env.CDP_API_KEY || "", process.env.CDP_API_PASSKEY || ""))
+    // api.setEndpoint("https://crux.dev.hxcd.now.hclsoftware.cloud/v3/data")
+
+    console.log(process.env.CDP_API_KEY || "", process.env.CDP_API_PASSKEY || "")
+
+    console.log(api.endpoint)
+
+    const apiResponse = await api.sendEvent(
+      new ApiRequest(
+        EventType.Track,
+        body.ussdCode,
+        new UserIdentity(UserIdentityType.Secondary, "mobile_phone", body.phoneNumber),
+        {
+          sessionId: body.sessionId,
+          ussdCode: body.ussdCode,
+          imei: body.imei,
+          menuPath: body.menuPath ? body.menuPath.join(" > ") : "",
+        },
+      ),
+    )
+
+    console.log("CDP API response:", apiResponse)
 
     const response = processUSSDRequest(body)
 
