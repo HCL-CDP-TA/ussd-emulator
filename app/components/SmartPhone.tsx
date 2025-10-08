@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { Signal, Phone, Delete, Voicemail, Wifi } from "lucide-react"
 import { SessionData, USSDResponse, USSDRequest } from "../types"
-import { generateGuid } from "../utils/guid"
 
 interface SmartPhoneProps {
   currentNumber: string
@@ -85,7 +84,7 @@ export default function SmartPhone({
       let currentPhoneNumber = currentNumber
 
       if (!currentSessionId && code.startsWith("*")) {
-        currentSessionId = generateGuid()
+        currentSessionId = crypto.randomUUID()
         // Use the current number from props
         if (!currentPhoneNumber) {
           currentPhoneNumber = "+254712345678" // Default fallback
