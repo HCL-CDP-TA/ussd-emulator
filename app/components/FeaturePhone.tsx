@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { Phone, PhoneOff, Signal, Voicemail } from "lucide-react"
 import { SessionData, USSDResponse, USSDRequest } from "../types"
-import { generateGuid } from "../utils/guid"
 
 interface FeaturePhoneProps {
   currentNumber: string
@@ -142,7 +141,7 @@ export default function FeaturePhone({
       let currentPhoneNumber = currentNumber
 
       if (!currentSessionId && code.startsWith("*")) {
-        currentSessionId = generateGuid()
+        currentSessionId = crypto.randomUUID()
         // Use the current number from props
         if (!currentPhoneNumber) {
           currentPhoneNumber = "+254712345678" // Default fallback
