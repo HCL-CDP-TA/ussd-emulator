@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.2](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.2.1...v1.2.2) (2025-10-08)
+
+
+### Bug Fixes
+
+* add uuid package for proper session ID generation ([28cfafa](https://github.com/HCL-CDP-TA/ussd-emulator/commit/28cfafac4ca186a05ef71ecddbe0403ddebbc064))
+* guid fix ([c000c01](https://github.com/HCL-CDP-TA/ussd-emulator/commit/c000c0174dcf406b3e97b6d53a23b613e30849a9))
+
 ## [1.2.1](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.2.0...v1.2.1) (2025-10-08)
 
 
