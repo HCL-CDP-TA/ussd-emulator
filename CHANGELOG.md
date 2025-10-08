@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.1.6...v1.2.0) (2025-10-08)
+
+
+### Features
+
+* added version nummber display ([5c4a712](https://github.com/HCL-CDP-TA/ussd-emulator/commit/5c4a712dfddb9efdbf5c98db234b4aceae64b92c))
+
+
+### Bug Fixes
+
+* fix imei numbers, include initial CDP methods ([af41d1e](https://github.com/HCL-CDP-TA/ussd-emulator/commit/af41d1effa5a794be5d3d3c0244c8258d2d7cd44))
+* removed redundant public files ([e24222f](https://github.com/HCL-CDP-TA/ussd-emulator/commit/e24222f03ae45b2127cf2516669995a98783cc3a))
+
 ## [1.1.6](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.1.5...v1.1.6) (2025-10-03)
 
 
