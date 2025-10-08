@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { v4 as uuidv4 } from "uuid"
 import { Signal, Phone, Delete, Voicemail, Wifi } from "lucide-react"
 import { SessionData, USSDResponse, USSDRequest } from "../types"
 
@@ -84,7 +85,9 @@ export default function SmartPhone({
       let currentPhoneNumber = currentNumber
 
       if (!currentSessionId && code.startsWith("*")) {
-        currentSessionId = crypto.randomUUID()
+        // Generate simple session ID
+        currentSessionId = uuidv4()
+
         // Use the current number from props
         if (!currentPhoneNumber) {
           currentPhoneNumber = "+254712345678" // Default fallback
