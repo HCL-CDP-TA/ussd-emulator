@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.3](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.2.2...v1.2.3) (2025-10-09)
+
+
+### Bug Fixes
+
+* popup positioning, enter/esc capture, ussd logic fixes ([20056e4](https://github.com/HCL-CDP-TA/ussd-emulator/commit/20056e41d83648d2d56025ac82bd5fe3f287fe82))
+
 ## [1.2.2](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.2.1...v1.2.2) (2025-10-08)
 
 
