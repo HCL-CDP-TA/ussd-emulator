@@ -31,8 +31,45 @@ export default function SmartPhone({
   // Keyboard event listener
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Don't interfere with input fields
+      // Don't interfere with input fields EXCEPT for Enter/Escape in USSD popup
       const target = event.target as HTMLElement
+      const key = event.key
+
+      // Handle USSD popup keyboard shortcuts FIRST - even when input is focused
+      if (ussdResponse) {
+        if (key === "Enter") {
+          event.preventDefault()
+          event.stopPropagation()
+
+          if (ussdResponse.continueSession) {
+            // Get the input value directly from the target if it's an input field
+            const inputValue = target.tagName === "INPUT" ? (target as HTMLInputElement).value : ussdInput
+            console.log("Enter pressed in USSD popup", {
+              continueSession: ussdResponse.continueSession,
+              stateInput: ussdInput,
+              directInput: inputValue,
+            })
+
+            if (inputValue.trim()) {
+              // Send USSD request directly with the input value instead of relying on state
+              sendUSSDRequest(sessionData.currentMenu, inputValue)
+              setUssdInput("")
+            }
+          } else {
+            // Final message - just close
+            setUssdResponse(null)
+          }
+          return
+        }
+
+        if (key === "Escape") {
+          event.preventDefault()
+          event.stopPropagation()
+          setUssdResponse(null)
+          return
+        }
+      }
+
       if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.contentEditable === "true") {
         return
       }
@@ -41,8 +78,6 @@ export default function SmartPhone({
       if (ussdResponse && target.closest(".ussd-popup")) {
         return
       }
-
-      const key = event.key
 
       // Handle number keys, * and #
       if (/^[0-9*#]$/.test(key)) {
@@ -248,9 +283,9 @@ export default function SmartPhone({
   return (
     <div className="relative">
       {/* Phone Frame */}
-      <div className="bg-black p-4 rounded-3xl shadow-2xl w-[380px]">
+      <div className="bg-black p-3 rounded-3xl shadow-2xl w-[400px]">
         {/* Screen */}
-        <div className="bg-white rounded-2xl p-4 h-[720px] flex flex-col">
+        <div className="bg-white rounded-2xl p-4 h-[800px] flex flex-col">
           {/* Status Bar */}
           <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
             <span className="font-mono font-bold">
@@ -267,14 +302,69 @@ export default function SmartPhone({
           {/* Normal Dialer Interface - Always visible */}
           <div className="flex-1 flex flex-col">
             {/* Dialer Header */}
-
             {/* Number Display */}
-            <div className="bg-gray-50 rounded-xl p-4 mb-4 text-center">
+            <div className="bg-gray-50 rounded-xl p-4 text-center">
               <div className="text-2xl font-mono text-gray-800 min-h-[32px] flex items-center justify-center">
                 {currentInput}
               </div>
             </div>
+            {/* USSD Response Popup - Centered in available space */}
+            {ussdResponse && (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="bg-white border-1 border-gray-300 rounded-lg p-3 max-w-sm w-full shadow-xl pointer-events-auto ussd-popup">
+                  {/* USSD Message */}
+                  <div className="mb-4">
+                    <div className="text-sm">{ussdResponse.message}</div>
+                  </div>
 
+                  {/* Menu Options */}
+                  {ussdResponse.menuOptions && (
+                    <div className="mb-4">
+                      {ussdResponse.menuOptions.map((option, index) => (
+                        <div key={index} className="text-sm">
+                          {index + 1}. {option}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* USSD Input Section - Separate smaller input */}
+                  {(ussdResponse.inputRequired || ussdResponse.menuOptions) && (
+                    <div className="mb-4">
+                      <input
+                        type="text"
+                        value={ussdInput}
+                        onChange={e => setUssdInput(e.target.value)}
+                        className="w-full border-b px-2 py-1 text-sm focus:outline-none focus:border-b"
+                        autoFocus
+                        maxLength={2}
+                      />
+                    </div>
+                  )}
+
+                  {/* Simple Buttons */}
+                  <div className="flex justify-end space-x-2">
+                    {ussdResponse.continueSession && !ussdResponse.menuOptions && (
+                      <button onClick={() => setUssdResponse(null)} className="px-4 py-1 text-sm">
+                        Cancel
+                      </button>
+                    )}
+                    {ussdResponse.continueSession ? (
+                      <button
+                        onClick={handleSendInput}
+                        disabled={!ussdInput.trim() || loading}
+                        className="px-4 py-1 text-sm disabled:gray-200">
+                        {loading ? "Sending..." : "OK"}
+                      </button>
+                    ) : (
+                      <button onClick={() => setUssdResponse(null)} className="px-4 py-1 text-sm">
+                        OK
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}{" "}
             {/* Main Keypad */}
             <div className="flex-1 flex flex-col justify-end">
               <div className="grid grid-cols-3 gap-3 mb-4">
@@ -329,62 +419,6 @@ export default function SmartPhone({
           </div>
         </div>
       </div>
-
-      {/* USSD Response Popup - Centered in available space above keypad */}
-      {ussdResponse && (
-        <div className="absolute top-16 left-6 right-6 bottom-80 flex items-center justify-center z-50 pointer-events-none">
-          <div className="bg-white border-2 border-gray-400 rounded-lg p-4 max-w-sm w-full shadow-xl pointer-events-auto ussd-popup">
-            {/* USSD Message */}
-            <div className="mb-4">
-              <div className="text-sm">{ussdResponse.message}</div>
-            </div>
-
-            {/* Menu Options */}
-            {ussdResponse.menuOptions && (
-              <div className="mb-4">
-                {ussdResponse.menuOptions.map((option, index) => (
-                  <div key={index} className="text-sm">
-                    {index + 1}. {option}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* USSD Input Section - Separate smaller input */}
-            {(ussdResponse.inputRequired || ussdResponse.menuOptions) && (
-              <div className="mb-4">
-                <input
-                  type="text"
-                  value={ussdInput}
-                  onChange={e => setUssdInput(e.target.value)}
-                  className="w-full border-b px-2 py-1 text-sm focus:outline-none focus:border-b"
-                  autoFocus
-                  maxLength={2}
-                />
-              </div>
-            )}
-
-            {/* Simple Buttons */}
-            <div className="flex justify-end space-x-2">
-              <button onClick={() => setUssdResponse(null)} className="px-4 py-1text-sm">
-                Cancel
-              </button>
-              {ussdResponse.continueSession ? (
-                <button
-                  onClick={handleSendInput}
-                  disabled={!ussdInput.trim() || loading}
-                  className="px-4 py-1 text-sm disabled:gray-200">
-                  {loading ? "Sending..." : "OK"}
-                </button>
-              ) : (
-                <button onClick={() => setUssdResponse(null)} className="px-4 py-1  text-sm">
-                  OK
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -222,6 +222,46 @@ const processUSSDRequest = (request: USSDRequest): USSDResponse => {
       }
 
     case "*555#":
+      // If this is a follow-up input (menu selection), handle it
+      if (request.input && request.menuPath && request.menuPath.length > 0) {
+        const voiceOffers = getPersonalizedOffers(customer).filter(
+          offer => offer.voiceMinutes || offer.id === "combo_deal",
+        )
+
+        if (request.menuPath.length === 1) {
+          // First level: bundle selection
+          const selection = parseInt(request.input)
+          const selectedOffer = voiceOffers[selection - 1]
+
+          if (selectedOffer) {
+            return {
+              message: `PURCHASE CONFIRMATION\n\n${selectedOffer.title}\nPrice: KSh ${selectedOffer.price}\n${selectedOffer.description}\nValid for: ${selectedOffer.validity}\n\nReply:\n1. Confirm Purchase\n2. Cancel`,
+              continueSession: true,
+              sessionId: request.sessionId,
+              menuOptions: ["Confirm Purchase", "Cancel"],
+            }
+          }
+        } else if (request.menuPath.length === 2) {
+          // Second level: confirmation
+          if (request.input === "1") {
+            return {
+              message: `PURCHASE SUCCESSFUL!\n\nYour voice bundle has been activated.\nYou will receive an SMS confirmation shortly.\n\nNew Balance: KSh ${(
+                customer.accountBalance - 299
+              ).toFixed(2)}\n\nThank you for choosing Unitel.`,
+              continueSession: false,
+              sessionId: request.sessionId,
+            }
+          } else {
+            return {
+              message: `PURCHASE CANCELLED\n\nNo charges have been made to your account.\n\nThank you for using Unitel USSD services.`,
+              continueSession: false,
+              sessionId: request.sessionId,
+            }
+          }
+        }
+      }
+
+      // Initial menu display
       const voiceOffers = getPersonalizedOffers(customer).filter(
         offer => offer.voiceMinutes || offer.id === "combo_deal",
       )
@@ -243,6 +283,42 @@ const processUSSDRequest = (request: USSDRequest): USSDResponse => {
       }
 
     case "*234#":
+      // If this is a follow-up input (menu selection), handle it
+      if (request.input && request.menuPath && request.menuPath.length > 0) {
+        const specialOffers = getPersonalizedOffers(customer)
+        
+        if (request.menuPath.length === 1) {
+          // First level: offer selection
+          const selection = parseInt(request.input)
+          const selectedOffer = specialOffers[selection - 1]
+
+          if (selectedOffer) {
+            return {
+              message: `PURCHASE CONFIRMATION\n\n${selectedOffer.title}\nPrice: KSh ${selectedOffer.price}\n${selectedOffer.description}\nValid for: ${selectedOffer.validity}\n\nReply:\n1. Confirm Purchase\n2. Cancel`,
+              continueSession: true,
+              sessionId: request.sessionId,
+              menuOptions: ["Confirm Purchase", "Cancel"],
+            }
+          }
+        } else if (request.menuPath.length === 2) {
+          // Second level: confirmation
+          if (request.input === "1") {
+            return {
+              message: `PURCHASE SUCCESSFUL!\n\nYour special offer has been activated.\nYou will receive an SMS confirmation shortly.\n\nNew Balance: KSh ${(customer.accountBalance - 199).toFixed(2)}\n\nThank you for choosing Unitel.`,
+              continueSession: false,
+              sessionId: request.sessionId,
+            }
+          } else {
+            return {
+              message: `PURCHASE CANCELLED\n\nNo charges have been made to your account.\n\nThank you for using Unitel USSD services.`,
+              continueSession: false,
+              sessionId: request.sessionId,
+            }
+          }
+        }
+      }
+
+      // Initial menu display
       const specialOffers = getPersonalizedOffers(customer)
       const specialMenuText = specialOffers
         .map(
@@ -280,16 +356,44 @@ const processUSSDRequest = (request: USSDRequest): USSDResponse => {
 
         // If we're in an offers menu, handle the selection
         if (request.menuPath.length > 0) {
-          const offers = getPersonalizedOffers(customer)
+          console.log("Menu selection debug:", {
+            ussdCode: request.ussdCode,
+            input: request.input,
+            menuPath: request.menuPath,
+            selection: parseInt(request.input),
+          })
+
+          let offers
+
+          // Determine which offers to use based on the original USSD code
+          if (request.ussdCode === "*444#") {
+            // Data bundles
+            offers = getPersonalizedOffers(customer).filter(offer => offer.dataAmount)
+          } else if (request.ussdCode === "*555#") {
+            // Voice bundles
+            offers = getPersonalizedOffers(customer).filter(offer => offer.voiceMinutes || offer.id === "combo_deal")
+          } else {
+            // All offers for other codes
+            offers = getPersonalizedOffers(customer)
+          }
+
+          console.log(
+            "Filtered offers:",
+            offers.map(o => o.title),
+          )
+
           const selectedOffer = offers[selection - 1]
 
           if (selectedOffer) {
+            console.log("Selected offer:", selectedOffer.title)
             return {
               message: `PURCHASE CONFIRMATION\n\n${selectedOffer.title}\nPrice: KSh ${selectedOffer.price}\n${selectedOffer.description}\nValid for: ${selectedOffer.validity}\n\nReply:\n1. Confirm Purchase\n2. Cancel`,
               continueSession: true,
               sessionId: request.sessionId,
               menuOptions: ["Confirm Purchase", "Cancel"],
             }
+          } else {
+            console.log("No offer selected for index:", selection - 1)
           }
         }
 
