@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.4](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.2.3...v1.2.4) (2025-12-07)
+
+
+### Bug Fixes
+
+* nextjs 15.5.7 security updagrade ([2beff65](https://github.com/HCL-CDP-TA/ussd-emulator/commit/2beff652c9c06cbd322edbde206c18da9d9efe79))
+
 ## [1.2.3](https://github.com/HCL-CDP-TA/ussd-emulator/compare/v1.2.2...v1.2.3) (2025-10-09)
 
 
